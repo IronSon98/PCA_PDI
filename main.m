@@ -24,12 +24,12 @@ erros = 1;
 nome_classe = ["AN", "DI", "FE", "HA", "NE", "SA", "SU"];
 
 %caminho = 'F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\dataset_ground_att\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
-caminho = 'F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\Dataset_Japas\Dataset\Emocoes\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
+caminho = 'C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\Dataset\Emocoes\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
 
 data = lerImgs(nome_classe, ind, treino);
 %data = lerDados;
 
- cd('F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\') % COLOQUE O ENDEREÇO !!!!
+ cd('C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\') % COLOQUE O ENDEREÇO !!!!
 
 [P PC mn] = GerarPCs(data);
 
