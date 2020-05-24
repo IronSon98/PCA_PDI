@@ -48,10 +48,9 @@ for i=1:ind
         
         %x = imread(strcat(caminho, nome_classe(i),'\', nome_classe(i), num2str(j),'.jpg'));
         x = imread(strcat(caminho, nome_classe(i),'\', nome_classe(i), num2str(j),'.tiff'));
-        %x = load(strcat(caminho,'s',num2str(i),'\','dado_',(int2str(j))));
         
         d = Classificar(PC, ProjetarAmostra(x,mn,P));
-        %d = Classificar(PC, ProjetarAmostra(x.dados,mn,P));
+
         d = d/treino;
         id = ceil(d);
         if id == i
@@ -122,7 +121,7 @@ while(i <= erros)
     d = d/treino;
     fotoErrada = 0;
     for j=1:treino
-        if (d-(floor(d)) == (j/treino))
+        if ((d-(floor(d))) >= (j/treino) && (d-(floor(d))) <= ((j/treino)+0.05))
             fotoErrada = j;
         end
     end
