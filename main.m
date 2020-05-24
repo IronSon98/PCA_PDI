@@ -1,13 +1,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Arlindo Galvão - PDI2019 %%
+%%Arlindo Galvão - PDI2020 %%
 %%        MAIN             %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all, close all
 
-ind=7; %qtd de individuos
-amostras=20; %qtd de amostras por foto
-treino=15; %qtd de amostras para treino
+ind=10; %qtd de individuos
+amostras=14; %qtd de amostras por foto
+treino=10; %qtd de amostras para treino
 acertos = 1;
 erros = 1;
 
@@ -20,21 +20,20 @@ erros = 1;
 % RT_24: Tapete
 
 %nome_classe = ["RT3_", "RT7_", "RT8_", "RT19_", "RT21_", "RT22_","RT24_"];
-%nome_classe = ["KA", "KL", "KM", "KR", "MK", "NA", "NM", "TM", "UY", "YM"];
-nome_classe = ["AN", "DI", "FE", "HA", "NE", "SA", "SU"];
+nome_classe = ["KA", "KL", "KM", "KR", "MK", "NA", "NM", "TM", "UY", "YM"];
+%nome_classe = ["AN", "DI", "FE", "HA", "NE", "SA", "SU"];
 
 %caminho = 'F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\dataset_ground_att\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
-caminho = 'F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\Dataset_Japas\Dataset\Emocoes\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
+%caminho = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\Base de dados\Emocoes\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
+caminho = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\Base de dados\Faces\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
 
 data = lerImgs(nome_classe, ind, treino);
-%data = lerDados;
 
- cd('F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\') % COLOQUE O ENDEREÇO !!!!
+ cd('C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\') % COLOQUE O ENDEREÇO !!!!
 
 [P PC mn] = GerarPCs(data);
 
 teste = amostras-treino;
-%teste = 5;
 k = 0;
 acertoInd = [];
 acertoFoto = [];
@@ -92,14 +91,12 @@ while(i <= acertos)
     figure;
     imshowpair(reshape(data(:,d),[size(x,1),size(x,2),size(x,3)]),x,'montage');
     
-    
     d = d/treino;
-    if (d-(floor(d)) == (1/treino))
-       fotoReconhecida = 1;
-    elseif(d-(floor(d)) == (2/treino))
-       fotoReconhecida = 2;
-    else
-       fotoReconhecida = 3;
+    fotoReconhecida = 0;
+    for j=1:treino
+        if (d-(floor(d)) == (j/treino))
+            fotoReconhecida = j;
+        end
     end
    
    formatSpec = '\nIndivíduo: %2.2i Foto de teste: %2.2i Foto Reconhecida: %2.2i% \n\n';
@@ -121,13 +118,13 @@ while(i <= erros)
     d = Classificar(PC, ProjetarAmostra(x,mn,P));
     figure;
     imshowpair(reshape(data(:,d),[size(x,1),size(x,2),size(x,3)]),x,'montage');
+    
     d = d/treino;
-    if(d-(floor(d)) == (1/treino))
-       fotoErrada = 1;
-    elseif(d-(floor(d)) == (2/treino))
-       fotoErrada = 2;
-    else
-       fotoErrada = 3;
+    fotoErrada = 0;
+    for j=1:treino
+        if (d-(floor(d)) == (j/treino))
+            fotoErrada = j;
+        end
     end
    
     formatSpec = '\nIndivíduo: %2.2i Foto de teste: %2.2i Indivíduo Reconhecido: %2.2i Foto Reconhecida: %2.2i \n\n';
