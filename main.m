@@ -10,8 +10,6 @@
 % ####              % UY          
 % ####              % YM     
 
-teste123 = 1;
-
 clear all, close all 
 
 cd('C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\');
