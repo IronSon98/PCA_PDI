@@ -14,11 +14,11 @@ clear all, close all
 
 treino = 0.7;
 n_class = 7; %Total de classes
-cellsize = [32 32];
+cellsize = [44 44];
 
-cd('C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI-ExtractionFeaturesHOG\')
+cd('C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\')
 
-caminho = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI-ExtractionFeaturesHOG\Dataset\Emocoes\';
+caminho = 'C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\Dataset\Emocoes\';
 
 imds = imageDatastore(caminho,'IncludeSubfolders',true,'LabelSource','foldernames');
 
@@ -49,10 +49,9 @@ for l = 1:n_executions
         x = readimage(testCell, i);
         x = imcrop(x, [75 ,80, 111, 149]);    
         y = reshape(x,[size(x,1)*size(x,2),1]);
-        y = double(y);
+        y = single(y);
         y = y';
         featureHog = extractHOGFeatures(x, 'CellSize',cellsize);
-        featureHog = double(featureHog);
         z = [y , featureHog];
         z = z';
 
