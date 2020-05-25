@@ -1,35 +1,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Arlindo Galvão - PDI2020 %%
-%%        MAIN             %%
+%%      Trabalho lista     %%
+%%          MAIN           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all, close all
 
-ind=10; %qtd de individuos
-amostras=14; %qtd de amostras por foto
-treino=10; %qtd de amostras para treino
+ind=7; %qtd de individuos
+amostras = 20; %qtd de amostras por foto
+treino= 12; %qtd de amostras para treino
 acertos = 1;
 erros = 1;
+cel = 4;
 
-% RT_3: Rocha
-% RT_7: Folhas
-% RT_8: Tijolos
-% RT_19: Madeira
-% RT_21: Capim
-% RT_22: Piso
-% RT_24: Tapete
+% nome_classe = ["KA", "KL", "KM", "KR", "MK", "NA", "NM", "TM", "UY", "YM"];
+nome_classe = ["AN", "DI", "FE", "HA", "NE", "SA", "SU"];
 
-%nome_classe = ["RT3_", "RT7_", "RT8_", "RT19_", "RT21_", "RT22_","RT24_"];
-nome_classe = ["KA", "KL", "KM", "KR", "MK", "NA", "NM", "TM", "UY", "YM"];
-%nome_classe = ["AN", "DI", "FE", "HA", "NE", "SA", "SU"];
-
-%caminho = 'F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\dataset_ground_att\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
-%caminho = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\Base de dados\Emocoes\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
-caminho = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\Base de dados\Faces\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
-
+caminho = 'C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\Dataset\Emocoes\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
 data = lerImgs(nome_classe, ind, treino);
 
- cd('C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\') % COLOQUE O ENDEREÇO !!!!
+ cd('C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\') % COLOQUE O ENDEREÇO !!!!
 
 [P PC mn] = GerarPCs(data);
 
@@ -39,100 +28,44 @@ acertoInd = [];
 acertoFoto = [];
 erroInd = [];
 erroFoto = [];
+featureHog = [];
 aux = 1;
 aux2 = 1;
-
+hit = 0;
 
 for i=1:ind
+    hitsperclass = 0;
     for j=treino+1:amostras
         
-        %x = imread(strcat(caminho, nome_classe(i),'\', nome_classe(i), num2str(j),'.jpg'));
         x = imread(strcat(caminho, nome_classe(i),'\', nome_classe(i), num2str(j),'.tiff'));
-        %x = load(strcat(caminho,'s',num2str(i),'\','dado_',(int2str(j))));
-        
-        d = Classificar(PC, ProjetarAmostra(x,mn,P));
-        %d = Classificar(PC, ProjetarAmostra(x.dados,mn,P));
-        d = d/treino;
-        id = ceil(d);
-        if id == i
-           k = k+1;
-           if aux <= acertos
-               acertoInd(aux) = i;
-               acertoFoto(aux) = j;
-               aux = aux+1;
-           end
-        else
-            if aux2 <= erros
-               erroInd(aux2) = i;
-               erroFoto(aux2) = j;
-               aux2 = aux2+1;
+        x = imcrop(x, [75 ,80, 111, 149]);    
+        featureHog = extractHOGFeatures(x);
+        featureHog = featureHog';
+
+        d = Classificar(PC, ProjetarAmostra(featureHog,mn,P));
+                            
+                    if (ceil(d/treino) == i)
+                        hit = hit + 1;
+                        hitsperclass = hitsperclass + 1;
+                    end
+               end
+               
+               disp(strcat('Hits per class - ',int2str(i),...
+                   ': hitsperclass: ',int2str(hitsperclass),...
+                   ' - ',num2str(100*hitsperclass/(amostras - treino)), '%. ',...
+                   ' .total:',int2str(amostras - treino)));
             end
-        end
-        clear im, clear x, clear d
-    end
-end
+
+            hitpercent = hit / (ind * (amostras - treino));
+            misspercent = 1 - hitpercent;
+
+            totalt = num2str(ind * (amostras - treino));
+
+            disp(strcat('numero de testes=', totalt))
+            disp(strcat('numero de acertos=', int2str(hit)));
+
+            disp(strcat('Porcentagem de erro=', num2str(100 * misspercent), '%'));
+            disp(strcat('Porcentagem de acerto=', num2str(100 * hitpercent), '%'));
+            disp('\\\');
 
 
-perc = (k/(ind*(amostras-treino)))*100;
-formatSpec = '\nFotos de teste: %2.2i Fotos de teste reconhecidas: %2.2i \nPercentual de acerto: %2.2f% \n\n';
-fprintf(formatSpec,teste*ind,k,perc);
-
-clear formatSpec;
-
-
-%Codigo para exibir imagens de erro e acerto
-i = 1;
-while(i <= acertos)   
-    
-    %x = imread(strcat(caminho, nome_classe(acertoInd(i)),'\', nome_classe(acertoInd(i)), num2str(acertoFoto(i)),'.jpg'));
-    x = imread(strcat(caminho, nome_classe(acertoInd(i)),'\', nome_classe(acertoInd(i)), num2str(acertoFoto(i)),'.tiff'));
-  
-    d = Classificar(PC, ProjetarAmostra(x,mn,P));
-    figure;
-    imshowpair(reshape(data(:,d),[size(x,1),size(x,2),size(x,3)]),x,'montage');
-    
-    d = d/treino;
-    fotoReconhecida = 0;
-    for j=1:treino
-        if (d-(floor(d)) == (j/treino))
-            fotoReconhecida = j;
-        end
-    end
-   
-   formatSpec = '\nIndivíduo: %2.2i Foto de teste: %2.2i Foto Reconhecida: %2.2i% \n\n';
-   fprintf(formatSpec,acertoInd(i),acertoFoto(i),fotoReconhecida);
-   
-
-   
-   clear im, clear x, clear d;
-   i = i+1;
-   
-end
-clear formatSpec;
-i = 1;
-while(i <= erros)
-    
-    %x = imread(strcat(caminho, nome_classe(erroInd(i)),'\', nome_classe(erroInd(i)), num2str(erroFoto(i)),'.jpg'));
-    x = imread(strcat(caminho, nome_classe(erroInd(i)),'\', nome_classe(erroInd(i)), num2str(erroFoto(i)),'.tiff'));
-    
-    d = Classificar(PC, ProjetarAmostra(x,mn,P));
-    figure;
-    imshowpair(reshape(data(:,d),[size(x,1),size(x,2),size(x,3)]),x,'montage');
-    
-    d = d/treino;
-    fotoErrada = 0;
-    for j=1:treino
-        if (d-(floor(d)) == (j/treino))
-            fotoErrada = j;
-        end
-    end
-   
-    formatSpec = '\nIndivíduo: %2.2i Foto de teste: %2.2i Indivíduo Reconhecido: %2.2i Foto Reconhecida: %2.2i \n\n';
-    fprintf(formatSpec,erroInd(i),erroFoto(i),ceil(d),fotoErrada);
-
-    clear im, clear x, clear d;
-    i = i+1;
-   
-end
-
-clear Y projData media s x y;
