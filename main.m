@@ -1,6 +1,6 @@
 % EMOÇÕES           % PESSOAS     
 %-----------------------------
-% AN: Angry         % KA         
+% AN: Angry         % KA          
 % DI: Disgusting    % KL         
 % FE: Fear          % KM         
 % HA: Happy         % KR         
@@ -9,6 +9,8 @@
 % SU: Surprise      % TM        
 % ####              % UY          
 % ####              % YM     
+
+teste123 = 1;
 
 clear all, close all 
 
