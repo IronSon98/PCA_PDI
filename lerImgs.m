@@ -1,13 +1,8 @@
-function z = x(classname, n_class, n_train)
+function z = x(trainCell, n_train)
 z = [];
-for j = 1:n_class
-    %1º parâmetro: endereço da pasta de imagens
-    filename = strcat('F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\Dataset_Japas\Dataset\Emocoes\',classname(j), '\');  % COLOQUE O ENDEREÇO !!!!
-    cd(filename)
-    for k = 1:n_train
-        x = imread(strcat(classname(j), int2str(k),'.tiff'));
-        y = reshape(x,[size(x,1)*size(x,2),1]);
-        z = [z , y];
-    end
+for i = 1:n_train
+    img_train = readimage(trainCell, i);
+    y = reshape(img_train,[size(img_train,1)*size(img_train,2),1]);
+    z = [z, y];
 end
 end

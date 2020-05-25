@@ -1,7 +1,6 @@
 %Gera a matriz de componentes principais
 %Entrada:
-%   data = matriz de dados. Cada amostra de medições é representada em uma
-%coluna
+%   data = matriz de dados. Cada amostra de medições é representada em uma coluna
 %saída:
 %   P = dados no novo espaço vetorial (autofaces no caso de imagens)
 %   PC = matriz componentes principais

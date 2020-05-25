@@ -1,137 +1,120 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Arlindo Galvão - PDI2020 %%
-%%        MAIN             %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% EMOÇÕES           % PESSOAS     
+%-----------------------------
+% AN: Angry         % KA         
+% DI: Disgusting    % KL         
+% FE: Fear          % KM         
+% HA: Happy         % KR         
+% NE: Neutral       % NA          
+% SA: Sadness       % NM         
+% SU: Surprise      % TM        
+% ####              % UY          
+% ####              % YM     
 
-clear all, close all
+clear all, close all 
 
-ind=10; %qtd de individuos
-amostras=14; %qtd de amostras por foto
-treino=10; %qtd de amostras para treino
-acertos = 1;
-erros = 1;
+cd('C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\');
 
-% RT_3: Rocha
-% RT_7: Folhas
-% RT_8: Tijolos
-% RT_19: Madeira
-% RT_21: Capim
-% RT_22: Piso
-% RT_24: Tapete
+path = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\Base de dados\Emocoes\'; 
 
-%nome_classe = ["RT3_", "RT7_", "RT8_", "RT19_", "RT21_", "RT22_","RT24_"];
-nome_classe = ["KA", "KL", "KM", "KR", "MK", "NA", "NM", "TM", "UY", "YM"];
-%nome_classe = ["AN", "DI", "FE", "HA", "NE", "SA", "SU"];
+imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames');
 
-%caminho = 'F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\dataset_ground_att\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
-%caminho = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\Base de dados\Emocoes\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
-caminho = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\Base de dados\Faces\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
+n_executions = 100;
+n_class = 7; %Total de classes
+hits_accuracy = [];
+faults_accuracy = [];
+accuracy_class_media(:, n_class) = 0;
+accuracy_class = [];
 
-data = lerImgs(nome_classe, ind, treino);
+for k = 1:n_executions
+    [trainCell, testCell] = splitEachLabel(imds, 0.7, 'randomized');
 
- cd('C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\') % COLOQUE O ENDEREÇO !!!!
+    n_test = size(testCell.Files, 1);
+    n_train = size(trainCell.Files, 1);
+    train = n_train /n_class; %Número de Treino por classes 
+    test = n_test /n_class; %Número de Teste por classes 
+    
+    data_train = lerImgs(trainCell, n_train);
 
-[P PC mn] = GerarPCs(data);
+    [P PC mn] = GerarPCs(data_train);
 
-teste = amostras-treino;
-k = 0;
-acertoInd = [];
-acertoFoto = [];
-erroInd = [];
-erroFoto = [];
-aux = 1;
-aux2 = 1;
+    hits = 0;
+    faults = 0;
+    hits_testCell = [];
+    hits_trainCell = [];
+    faults_testCell = [];
+    faults_trainCell = [];
+    hits_class = zeros(n_class);
 
+    for i=1:n_test
+        img_test = readimage(testCell, i);
+        d = Classificar(PC, ProjetarAmostra(img_test,mn,P));
 
-for i=1:ind
-    for j=treino+1:amostras
-        
-        %x = imread(strcat(caminho, nome_classe(i),'\', nome_classe(i), num2str(j),'.jpg'));
-        x = imread(strcat(caminho, nome_classe(i),'\', nome_classe(i), num2str(j),'.tiff'));
-        
-        d = Classificar(PC, ProjetarAmostra(x,mn,P));
-
-        d = d/treino;
-        id = ceil(d);
-        if id == i
-           k = k+1;
-           if aux <= acertos
-               acertoInd(aux) = i;
-               acertoFoto(aux) = j;
-               aux = aux+1;
-           end
+        if trainCell.Labels(d) == testCell.Labels(i)
+            pos_class = ceil(d/train);
+            hits_class(pos_class) = hits_class(pos_class) + 1;
+            
+            hits = hits + 1;
+            hits_testCell(hits) = i;
+            hits_trainCell(hits) = d;
         else
-            if aux2 <= erros
-               erroInd(aux2) = i;
-               erroFoto(aux2) = j;
-               aux2 = aux2+1;
-            end
-        end
-        clear im, clear x, clear d
-    end
-end
-
-
-perc = (k/(ind*(amostras-treino)))*100;
-formatSpec = '\nFotos de teste: %2.2i Fotos de teste reconhecidas: %2.2i \nPercentual de acerto: %2.2f% \n\n';
-fprintf(formatSpec,teste*ind,k,perc);
-
-clear formatSpec;
-
-
-%Codigo para exibir imagens de erro e acerto
-i = 1;
-while(i <= acertos)   
-    
-    %x = imread(strcat(caminho, nome_classe(acertoInd(i)),'\', nome_classe(acertoInd(i)), num2str(acertoFoto(i)),'.jpg'));
-    x = imread(strcat(caminho, nome_classe(acertoInd(i)),'\', nome_classe(acertoInd(i)), num2str(acertoFoto(i)),'.tiff'));
-  
-    d = Classificar(PC, ProjetarAmostra(x,mn,P));
-    figure;
-    imshowpair(reshape(data(:,d),[size(x,1),size(x,2),size(x,3)]),x,'montage');
-    
-    d = d/treino;
-    fotoReconhecida = 0;
-    for j=1:treino
-        if (d-(floor(d)) == (j/treino))
-            fotoReconhecida = j;
+            faults = faults + 1;
+            faults_testCell(faults) = i;
+            faults_trainCell(faults) = d;
         end
     end
-   
-   formatSpec = '\nIndivíduo: %2.2i Foto de teste: %2.2i Foto Reconhecida: %2.2i% \n\n';
-   fprintf(formatSpec,acertoInd(i),acertoFoto(i),fotoReconhecida);
-   
 
-   
-   clear im, clear x, clear d;
-   i = i+1;
-   
-end
-clear formatSpec;
-i = 1;
-while(i <= erros)
-    
-    %x = imread(strcat(caminho, nome_classe(erroInd(i)),'\', nome_classe(erroInd(i)), num2str(erroFoto(i)),'.jpg'));
-    x = imread(strcat(caminho, nome_classe(erroInd(i)),'\', nome_classe(erroInd(i)), num2str(erroFoto(i)),'.tiff'));
-    
-    d = Classificar(PC, ProjetarAmostra(x,mn,P));
-    figure;
-    imshowpair(reshape(data(:,d),[size(x,1),size(x,2),size(x,3)]),x,'montage');
-    
-    d = d/treino;
-    fotoErrada = 0;
-    for j=1:treino
-        if ((d-(floor(d))) >= (j/treino) && (d-(floor(d))) <= ((j/treino)+0.05))
-            fotoErrada = j;
-        end
+    hits_accuracy(k) = (hits/n_test)*100;
+    faults_accuracy(k) = (faults/n_test)*100;
+
+    disp("Execução número: " + num2str(k));
+    disp("Índice de acertos: " + num2str(hits_accuracy(k)) + "%");
+    disp("Índice de erros: " + num2str(faults_accuracy(k)) + "%");
+    disp("Quantidade de imagens de teste: " + num2str(n_test));
+    disp("Quantidade de acertos: " + num2str(hits));
+    for i = 1:n_class
+        accuracy_class(i) = (hits_class(i)/test)*100;
+        disp("Acurácia Classe " + char(trainCell.Labels(i*train)) + ' = ' + num2str(accuracy_class(i)) + "%");
+        accuracy_class_media(i) = accuracy_class_media(i) + accuracy_class(i);
     end
-   
-    formatSpec = '\nIndivíduo: %2.2i Foto de teste: %2.2i Indivíduo Reconhecido: %2.2i Foto Reconhecida: %2.2i \n\n';
-    fprintf(formatSpec,erroInd(i),erroFoto(i),ceil(d),fotoErrada);
-
-    clear im, clear x, clear d;
-    i = i+1;
-   
+    disp("-----------------------------------------------");
 end
 
-clear Y projData media s x y;
+s_hits_accuracy = 0;
+s_faults_accuracy = 0;
+best_accuracy = 0;
+
+for k=1:n_executions
+    if hits_accuracy(k) > best_accuracy
+        best_accuracy = hits_accuracy(k);
+    end
+    s_hits_accuracy = s_hits_accuracy +  hits_accuracy(k);
+    s_faults_accuracy = s_faults_accuracy +  faults_accuracy(k);
+end
+
+media_hits_accuracy = s_hits_accuracy/n_executions;
+media_faults_accuracy = s_faults_accuracy/n_executions;
+
+disp(" ");
+disp("***********************************************");
+disp("Média de acertos: " + num2str(media_hits_accuracy) + "%");
+disp("Média de erros: " + num2str(media_faults_accuracy) + "%");
+disp("Melhor acurácia: " + num2str(best_accuracy) + "%");
+for i=1:n_class
+    accuracy_class_media(i) = (accuracy_class_media(i)/n_executions);
+    disp("Acurácia Classe " + char(trainCell.Labels(i*train)) + ' = ' + num2str(accuracy_class_media(i)) + "%");
+end
+disp("***********************************************");
+
+img_train_hit = readimage(trainCell, hits_trainCell(1));
+img_test_hit = readimage(testCell, hits_testCell(1));
+
+figure; imshowpair(img_train_hit, img_test_hit, 'montage');
+
+title("Exemplo de Acerto");
+
+img_test_fault = readimage(testCell, faults_testCell(1));
+img_train_fault = readimage(trainCell, faults_trainCell(1));
+
+figure; imshowpair(img_test_fault, img_train_fault, 'montage');
+
+title("Exemplo de Erro");
