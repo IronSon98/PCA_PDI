@@ -4,68 +4,75 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all, close all
+teste = 0.3;
+treino = 0.7;
+cellsize = [44 44];
 
-ind=7; %qtd de individuos
-amostras = 20; %qtd de amostras por foto
-treino= 12; %qtd de amostras para treino
-acertos = 1;
-erros = 1;
-cel = 4;
-
-% nome_classe = ["KA", "KL", "KM", "KR", "MK", "NA", "NM", "TM", "UY", "YM"];
-nome_classe = ["AN", "DI", "FE", "HA", "NE", "SA", "SU"];
-
+% caminho = 'C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\Dataset\Faces\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
 caminho = 'C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\Dataset\Emocoes\'; %ATENÇÃO ALTERAR ESSE CAMINHO NO ARQUIVO lerImgs TAMBEM
-data = lerImgs(nome_classe, ind, treino);
 
+imds = imageDatastore(caminho,'IncludeSubfolders',true,'LabelSource','foldernames');
+[trainCell, testCell] = splitEachLabel(imds, treino, teste);
+
+n_class = 7; % total de classes
+n_train = size(trainCell.Files,1); % Numero de n_trains
+n_test = size(testCell.Files,1); %  Numero de Teste
+n_amostras = (n_train /n_class) + (n_test /n_class); %total de amostras
+train = n_train /n_class;%  Numero de Traino por classes 
+test = n_test /n_class;%  Numero de teste por classes 
+data = lerImgs(trainCell ,n_train);
+data = data';
  cd('C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\') % COLOQUE O ENDEREÇO !!!!
 
 [P PC mn] = GerarPCs(data);
 
-teste = amostras-treino;
-k = 0;
-acertoInd = [];
-acertoFoto = [];
-erroInd = [];
-erroFoto = [];
-featureHog = [];
-aux = 1;
-aux2 = 1;
 hit = 0;
+hit_class(:,n_class) = 0;
 
-for i=1:ind
-    hitsperclass = 0;
-    for j=treino+1:amostras
-        
-        x = imread(strcat(caminho, nome_classe(i),'\', nome_classe(i), num2str(j),'.tiff'));
+for i=1:n_test
+   
+        x = readimage(testCell, i);
         x = imcrop(x, [75 ,80, 111, 149]);    
+%         imshow(x);
+%         featureHog = extractHOGFeatures(x, 'CellSize',cellsize);
         featureHog = extractHOGFeatures(x);
         featureHog = featureHog';
-
+        
         d = Classificar(PC, ProjetarAmostra(featureHog,mn,P));
                             
-                    if (ceil(d/treino) == i)
-                        hit = hit + 1;
-                        hitsperclass = hitsperclass + 1;
-                    end
-               end
+        if trainCell.Labels(d) == testCell.Labels(i)
+            pos_class = ceil(d/train);
+            hit_class(pos_class) = hit_class(pos_class) + 1;
+            hit = hit + 1;
+            
+            d_hit = d;
+            test_hit = i;
+        else
+            d_error = d;
+            test_error = i;
+        end
+end
+%% mostrar imagens de acerto && acerto
+img_hit = readimage(trainCell, d_hit);
+img_test_hit = readimage(testCell, test_hit);
+figure; imshowpair(img_hit, img_test_hit, 'montage');
+
+img_error = readimage(trainCell, d_error);
+img_test_error = readimage(testCell, test_error);
+figure; imshowpair(img_error, img_test_error, 'montage');
+%% mostrar acertos por classe e acertos acertos totais 
+for i = 1:n_class
+    
+               acuracy_class(i) = (hit_class(i)/test)*100;
+               disp(strcat('Hits per class - ',32,int2str(i),...
+               ': hitsperclass:',...
+               ' - ',32,num2str(acuracy_class(i)), '%. '));
+end
                
-               disp(strcat('Hits per class - ',int2str(i),...
-                   ': hitsperclass: ',int2str(hitsperclass),...
-                   ' - ',num2str(100*hitsperclass/(amostras - treino)), '%. ',...
-                   ' .total:',int2str(amostras - treino)));
-            end
+            hitpercent = (hit/n_test) * 100;
+            misspercent = 100 - hitpercent;
 
-            hitpercent = hit / (ind * (amostras - treino));
-            misspercent = 1 - hitpercent;
-
-            totalt = num2str(ind * (amostras - treino));
-
-            disp(strcat('numero de testes=', totalt))
-            disp(strcat('numero de acertos=', int2str(hit)));
-
-            disp(strcat('Porcentagem de erro=', num2str(100 * misspercent), '%'));
-            disp(strcat('Porcentagem de acerto=', num2str(100 * hitpercent), '%'));
+            disp(strcat('Porcentagem de erro =',32, num2str(misspercent), '%'));
+            disp(strcat('Porcentagem de acerto =',32, num2str(hitpercent), '%'));
             disp('\\\');
-
 
