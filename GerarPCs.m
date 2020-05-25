@@ -11,7 +11,6 @@ function [P PC mn] = GerarPCs(data)
     [M,N] = size(data);
     mn = mean(data,2); %calcular a média
     data = double(data) - repmat(mn,1,N); %imagens - media
-
     covariancia = data' * data; %matriz de covariância
     [PC,V] = eig(covariancia); %autovetores e autovalores
 
