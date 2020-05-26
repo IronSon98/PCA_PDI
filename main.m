@@ -14,12 +14,12 @@ clear all, close all
 
 cd('C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\');
 
-path = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\Base de dados\Emocoes\'; 
+path = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\Dataset\Faces\'; 
 
 imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames');
 
 n_executions = 100;
-n_class = 7; %Total de classes
+n_class = 10; %Total de classes
 hits_accuracy = [];
 faults_accuracy = [];
 accuracy_class_media(:, n_class) = 0;
