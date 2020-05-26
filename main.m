@@ -13,12 +13,12 @@
 clear all, close all
 
 treino = 0.7;
-n_class = 7; %Total de classes
+n_class = 10; %Total de classes
 cellsize = [44 44];
 
-cd('C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\')
+cd('C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\')
 
-caminho = 'C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\Lista 6\PCA_PDI\Dataset\Emocoes\';
+caminho = 'C:\Users\Iron Santana Filho\Desktop\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\Dataset\Faces\';
 
 imds = imageDatastore(caminho,'IncludeSubfolders',true,'LabelSource','foldernames');
 
