@@ -112,9 +112,9 @@ figure; imshowpair(img_train_hit, img_test_hit, 'montage');
 
 title("Exemplo de Acerto");
 
-img_test_fault = readimage(testCell, faults_testCell(1));
 img_train_fault = readimage(trainCell, faults_trainCell(1));
+img_test_fault = readimage(testCell, faults_testCell(1));
 
-figure; imshowpair(img_test_fault, img_train_fault, 'montage');
+figure; imshowpair(img_train_fault, img_test_fault, 'montage');
 
 title("Exemplo de Erro");
