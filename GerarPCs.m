@@ -1,16 +1,16 @@
 %Gera a matriz de componentes principais
 %Entrada:
-%   data = matriz de dados. Cada amostra de medições é representada em uma
-%coluna
+%   data = matriz de dados. Cada amostra de medições é representada em uma coluna
 %saída:
 %   P = dados no novo espaço vetorial (autofaces no caso de imagens)
 %   PC = matriz componentes principais
 %   mn = média de cada coluna da matriz de dados
 
-function [P PC mn] = GerarPCs(data)
-    [M,N] = size(data);
+function [P, PC, mn] = GerarPCs(data)
+    [M, N] = size(data);
     mn = mean(data,2); %calcular a média
     data = double(data) - repmat(mn,1,N); %imagens - media
+
     covariancia = data' * data; %matriz de covariância
     [PC,V] = eig(covariancia); %autovetores e autovalores
 
@@ -20,7 +20,7 @@ function [P PC mn] = GerarPCs(data)
 
     %ordenar autovetores e autovalores
 
-    [junk,rindices] = sort(-1*V);
+    [junk, rindices] = sort(-1*V);
     V = V(rindices);
     V = diag(V);
     PC = PC(:,rindices);

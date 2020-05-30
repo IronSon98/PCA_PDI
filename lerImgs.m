@@ -1,12 +1,12 @@
-function z = x(im_data_store, n_train)
+%Leitura e tratamento das imagens de treino
+function z = lerImgs(img_data_store, n_train, bag)
     z = [];
     for i = 1:n_train
-            x = readimage(im_data_store, i);
-            x = imresize(x, [320 240]);
-            %texture_feat = extractLBPFeatures(x, 'CellSize', [32 32], 'Normalization', 'L2');
-            %z(i, :) = [texture_feat];
-            y = reshape(x,[size(x,1)*size(x,2),1]);
-            z = [z, y];
+            img = readimage(img_data_store, i);
+            img = imresize(img, [256 256]);
+            bag_features = encode(bag, img, 'Normalization', 'L2');
+            x = bag_features;
+            z(i, :) = [x];
     end
-    %z = z';
+    z = z';
 end

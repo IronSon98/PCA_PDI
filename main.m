@@ -1,110 +1,144 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Arlindo Galvão - PDI2020 %%
-%%        MAIN             %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear all, close all
-  
-cd('F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\PCA\')
+%Superfície     Código
+%------------------------
+%Capim          RT21
+%Folhas         RT7
+%Madeira        RT19
+%Piso           RT22
+%Rochas         RT3
+%Tapete         RT24
+%Tijolos        RT8
 
-path = 'F:\Backup\Desktop\Faculdade\9º Período\Visão Computacional - OP\Dataset_surfaces\Surfaces';
-n_class = 7;
+clear all, close all 
 
+cd('C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Trabalho Final\PCA_PDI-master\');
+path = 'C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Trabalho Final\Dataset\'; 
+
+%Leitura da base de dados
 imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames');
-n_iter = 100;
-acuracy_iter = 0;
-acuracy_class_iter(:, n_class) = 0;
+bag = bagOfFeatures(imds, 'StrongestFeatures', 1.0, 'PointSelection', 'Detector', 'VocabularySize', 380);
 
-for k=1:n_iter
-    
+n_executions = 3; %Número de execuções
+n_class = 7; %Total de classes
+accuracy_class_media(:, n_class) = 0; %Vetor com as médias de acurácia de acertos por classe
+hits_accuracy = zeros(1, n_executions); %Vetor com as acurácias de acerto
+faults_accuracy = zeros(1, n_executions); %Vetor com as acurácias de erro
+hits_testCell(n_executions, :) = 0; %Matriz com todos os acertos de teste
+hits_trainCell(n_executions, :) = 0; %Matriz com todos os acertos de treino
+faults_testCell(n_executions, :) = 0; %Matriz com todos os erros de teste
+faults_trainCell(n_executions, :) = 0; %Matriz com todos os erros de treino
+s_hits_accuracy = 0; %Somatório das acurácias de acerto
+s_faults_accuracy = 0; %Somatório das acurácias de erro
+best_accuracy = 0; %Melhor acurácia de todas as execuções
+flagHit = 0; %Verifica se em uma das execuções teve pelo menos 1 acerto
+flagFault = 0; %Verifica se em uma das execuções teve pelo menos 1 erro
+ 
+for k = 1:n_executions
+    %Seleção das imagens para treino e teste
     [trainCell, testCell] = splitEachLabel(imds, 0.7, 'randomized');
 
-    n_train = size(trainCell.Files, 1);
-    n_test = size(testCell.Files, 1);
+    n_test = size(testCell.Files, 1); %Número de testes
+    n_train = size(trainCell.Files, 1); %Número de treinos
+    train = n_train /n_class; %Número de Treino por classes 
+    test = n_test /n_class; %Número de Teste por classes 
+    sample = train + test; %Amostra
+    
+    %Geração da base de treinamento
+    data_train = lerImgs(trainCell, n_train, bag);
+    
+    %Geraçãos de PCS
+    [P, PC, mn] = GerarPCs(data_train);
 
-    train = n_train/n_class;
-    test = n_test/n_class;
-    sample = train + test;
+    %Declaração de variáveis
+    hits = 0;
+    faults = 0;
+    hits_class = zeros(1, n_class);
+    accuracy_class = zeros(1, n_class);
+    
+    %Realização dos testes
+    for i=1:n_test
+        img_test = readimage(testCell, i);
+        img_test = imresize(img_test, [256 256]);
+        bag_features = encode(bag, img_test, 'Normalization', 'L2');
+        d = Classificar(PC, ProjetarAmostra(bag_features, mn, P));
 
-    data = lerImgs(trainCell, n_train);
-
-    [P PC mn] = GerarPCs(data);
-
-    hits = 0; 
-    hit_class(:, n_class) = 0;
-    hit_class(:, :) = 0;
-    flag = 0;
-
-    for i=1:n_test(1)
-            %x = imcrop(x, [75 ,80, 110, 150]);
-            img_test = readimage(testCell, i);
-            d_min = Classificar(PC, ProjetarAmostra(img_test, mn, P));
-
-            % Acuracy & Examples
-            if trainCell.Labels(d_min) == testCell.Labels(i)
-                idx_class = d_min/train;
-                idx_class = ceil(idx_class);
-                hit_class(idx_class) = hit_class(idx_class) + 1;
-
-                hits = hits + 1;
-                d_hit = d_min;
-                test_hit = i;
-            else
-                flag = 1;
-                d_error = d_min;
-                test_error = i;
-            end
+        %Cálculo e armazenamento dos acertos e erros
+        if trainCell.Labels(d) == testCell.Labels(i)
+            flagHit = 1;
+            
+            pos_class = ceil(d/train);
+            hits_class(pos_class) = hits_class(pos_class) + 1;
+            
+            hits = hits + 1;
+            hits_trainCell(k, hits) = d;
+            hits_testCell(k, hits) = i;
+        else
+            flagFault = 1;
+            
+            faults = faults + 1;
+            faults_trainCell(k, faults) = d;
+            faults_testCell(k, faults) = i;
+        end
     end
-    acuracy_iter = acuracy_iter + ((hits/n_test)*100);
-    disp("Acurácia Iteração "+ int2str(k) + " = " + num2str((hits/n_test)*100) + "%");
-    for j=1:n_class
-        acuracy_class_iter(j) =  acuracy_class_iter(j) + ((hit_class(j)/test)*100);
+    
+    %Cálculo da acurácia de acertos e erros de uma execução x
+    hits_accuracy(k) = (hits/n_test)*100;
+    faults_accuracy(k) = (faults/n_test)*100;
+    
+    %Verificação da melhor acurácia
+    if hits_accuracy(k) > best_accuracy
+        best_accuracy = hits_accuracy(k);
     end
+    
+    %Somatório de todas as acúracias de acertos e erros
+    s_hits_accuracy = s_hits_accuracy +  hits_accuracy(k);
+    s_faults_accuracy = s_faults_accuracy +  faults_accuracy(k);
+    
+    %Exibição dos resultados para cada execução
+    disp("Execução número: " + num2str(k));
+    disp("Índice de acertos: " + num2str(hits_accuracy(k)) + "%");
+    disp("Índice de erros: " + num2str(faults_accuracy(k)) + "%");
+    disp("Quantidade de imagens de teste: " + num2str(n_test));
+    disp("Quantidade de acertos: " + num2str(hits));
+    for i = 1:n_class
+        accuracy_class(i) = (hits_class(i)/test)*100;
+        disp("Acurácia Classe " + char(trainCell.Labels(i*train)) + ' = ' + num2str(accuracy_class(i)) + "%");
+        accuracy_class_media(i) = accuracy_class_media(i) + accuracy_class(i);
+    end
+    disp("-----------------------------------------------");
 end
 
-acuracy = acuracy_iter/n_iter;
-disp("Acurácia Média Total = " + num2str(acuracy) + "%");
-acuracy_class(:, n_class) = 0;
+%Cálculo da média de acurácias de acertos e erros
+media_hits_accuracy = s_hits_accuracy/n_executions;
+media_faults_accuracy = s_faults_accuracy/n_executions;
 
-for z=1:n_class
-    acuracy_class(z) = (acuracy_class_iter(z)/n_iter);
-    disp("Acurácia Classe " + char(trainCell.Labels(z*train)) + ' = ' + num2str(acuracy_class(z)) + "%");
+%Exibição final dos resultados
+disp(" ");
+disp("***********************************************");
+disp("Média de acertos: " + num2str(media_hits_accuracy) + "%");
+disp("Média de erros: " + num2str(media_faults_accuracy) + "%");
+disp("Melhor acurácia: " + num2str(best_accuracy) + "%");
+for i=1:n_class
+    accuracy_class_media(i) = accuracy_class_media(i)/n_executions;
+    disp("Acurácia Classe " + char(trainCell.Labels(i*train)) + ' = ' + num2str(accuracy_class_media(i)) + "%");
+end
+disp("***********************************************");
+
+%Exemplo de acerto (se tiver)
+if flagHit ~= 0
+    img_train_hit = readimage(trainCell, hits_trainCell(n_executions, 1));
+    img_test_hit = readimage(testCell, hits_testCell(n_executions, 1));
+
+    figure; imshowpair(img_train_hit, img_test_hit, 'montage');
+
+    title("Exemplo de Acerto");
 end
 
-figure; bar(acuracy_class);
+%Exemplo de erro (se tiver)
+if flagFault ~= 0
+    img_train_fault = readimage(trainCell, faults_trainCell(n_executions, 1));
+    img_test_fault = readimage(testCell, faults_testCell(n_executions, 1));
 
-img_hit = readimage(trainCell, d_hit);
-img_test_hit = readimage(testCell, test_hit);
-figure; imshowpair(img_hit, img_test_hit, 'montage');
-title(char(trainCell.Labels(d_hit)) + "          |          " + char(testCell.Labels(test_hit)));
+    figure; imshowpair(img_train_fault, img_test_fault, 'montage');
 
-if flag ~= 0
-    img_error = readimage(trainCell, d_error);
-    img_test_error = readimage(testCell, test_error);
-    figure; imshowpair(img_error, img_test_error, 'montage');
-    title(char(trainCell.Labels(d_error)) + "          |          " + char(testCell.Labels(test_error)));
+    title("Exemplo de Erro");
 end
-
-% n = 1;
-% while n ~= 0
-%     n = input("Número da imagem a ser classificada(1 à " + int2str(n_test) + "):");
-%     if n ~=0
-%         img_test = readimage(testCell, n);
-%         d_min = Classificar(PC, ProjetarAmostra(img_test, mn, P));
-% 
-%         if trainCell.Labels(d_min) == testCell.Labels(i)           
-%             d_hit = d_min;
-%             test_hit = n;
-%             img_hit = readimage(trainCell, d_hit);
-%             img_test_hit = readimage(testCell, test_hit);
-%             figure; imshowpair(img_hit, img_test_hit, 'montage');
-%             title(char(trainCell.Labels(d_hit)) + "          |          " + char(testCell.Labels(test_hit)));
-%         else
-%             d_error = d_min;
-%             test_error = n;
-%             img_error = readimage(trainCell, d_error);
-%             img_test_error = readimage(testCell, test_error);
-%             figure; imshowpair(img_error, img_test_error, 'montage');
-%             title(char(trainCell.Labels(d_error)) + "          |          " + char(testCell.Labels(test_error)));
-%         end
-%     end
-% end
