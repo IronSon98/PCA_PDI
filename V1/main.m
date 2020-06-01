@@ -10,8 +10,8 @@
 
 clear all, close all 
 
-cd('C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Lista 6\Minha PCA_PDI\');
-path = 'C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Lista 6\PCA_PDI\Dataset\'; 
+cd('F:\Backup\Desktop\Faculdade\9º Período\Processamento Digital de Imagens\Github\PCA_PDI\V1\');
+path = 'F:\Backup\Desktop\Faculdade\9º Período\Processamento Digital de Imagens\Github\PCA_PDI\Dataset\'; 
 
 %Leitura da base de dados
 imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames');

@@ -5,9 +5,11 @@
 %   P = dados no novo espaço vetorial (autofaces no caso de imagens)
 %Saída:
 %   x = amostra no novo espaço vetorial
-function x = ProjetarAmostra(x,mn,P)
-    x = imresize(x, [256 256]);
-    x = reshape(x,[size(x,1)*size(x,2),1]);
-    x = double(x) - mn;
-    x = P' * x;
+function features = ProjetarAmostra(x,mn,P)
+    img_test = imresize(x, [256 256]);
+    %img_test = reshape(img_test,[size(img_test,1)*size(img_test,2),1]);
+    LBP = extractLBPFeatures(img_test, 'NumNeighbors', 8, 'Radius', 1, 'Upright', false, 'Interpolation', 'Nearest', 'CellSize', [32 32], 'Normalization', 'None');
+    %features = reshape(features, [size(features,1)*size(features,2), 1]);
+    features = double(LBP) - mn;
+    features = P' * features;
 end
