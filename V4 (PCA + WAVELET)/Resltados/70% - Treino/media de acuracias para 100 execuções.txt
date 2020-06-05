@@ -1,0 +1,10 @@
+Média de acertos: 83.7976%
+Média de erros: 16.2024%
+Melhor acurácia: 91.6667%
+Acurácia Classe Capim = 83.9167%
+Acurácia Classe Folhas = 83.9167%
+Acurácia Classe Madeira = 85.8333%
+Acurácia Classe Piso = 97.6667%
+Acurácia Classe Rochas = 60.1667%
+Acurácia Classe Tapete = 91.8333%
+Acurácia Classe Tijolos = 83.25%
