@@ -16,8 +16,8 @@ path = 'C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\PCA_PDI\Data
 %Leitura da base de dados
 imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames');
 
-sn = waveletScattering2 ('ImageSize' , [320 240], 'InvarianceScale' , 150);
-n_executions = 100; %Número de execuções
+sn = waveletScattering2 ('ImageSize' , [960 1280]);
+n_executions = 1; %Número de execuções
 n_class = 7; %Total de classes
 hits_accuracy = zeros(1, n_executions); %Vetor com as acurácias de acerto
 faults_accuracy = zeros(1, n_executions); %Vetor com as acurácias de erro
