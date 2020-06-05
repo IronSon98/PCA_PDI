@@ -10,13 +10,13 @@
 
 clear all, close all 
 
-cd('C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\PCA_PDI\V3 (PCA + LBP)\');
+cd('C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\PCA_PDI\V4 (PCA + WAVELET)\');
 path = 'C:\Users\pedri\OneDrive\Área de Trabalho\Semestre atual\PDI\PCA_PDI\Dataset\'; 
 
 %Leitura da base de dados
 imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames');
 
-sn = waveletScattering2 ('ImageSize' , [256 256], 'InvarianceScale' , 150);
+sn = waveletScattering2 ('ImageSize' , [320 240], 'InvarianceScale' , 150);
 n_executions = 100; %Número de execuções
 n_class = 7; %Total de classes
 hits_accuracy = zeros(1, n_executions); %Vetor com as acurácias de acerto

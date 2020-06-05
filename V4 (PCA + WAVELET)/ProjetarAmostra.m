@@ -6,7 +6,7 @@
 %Saída:
 %   x = amostra no novo espaço vetorial
 function features = ProjetarAmostra(x,mn,P,sn)
-    img_test = imresize(x, [256 256]);
+    img_test = imresize(x, [320 240]);
     Feature1 = featureMatrix(sn, img_test);
     Feature1 = mean(mean(Feature1,2),3);
     %img_test = reshape(img_test,[size(img_test,1)*size(img_test,2),1]);

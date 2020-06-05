@@ -1,10 +1,10 @@
 function z = lerImgs(trainCell, n_train)
     %z(256*256*3, n_train) = 0;
     z = [];
-    sn = waveletScattering2 ('ImageSize' , [256 256], 'InvarianceScale' , 150);
+    sn = waveletScattering2 ('ImageSize' , [320 240], 'InvarianceScale' , 150);
     for i = 1:n_train
         img_train = readimage(trainCell, i);
-        img_train = imresize(img_train, [256 256]);
+        img_train = imresize(img_train, [320 240]);
         Feature = featureMatrix(sn, img_train);
         Feature = mean(mean(Feature,2),3);
         %img_train = reshape(img_train,[size(img_train,1)*size(img_train,2),1]);
