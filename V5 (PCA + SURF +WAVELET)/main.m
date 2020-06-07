@@ -10,13 +10,13 @@
 
 clear all, close all 
 
-cd('F:\Backup\Desktop\Faculdade\9º Período\Processamento Digital de Imagens\Github\PCA_PDI\V1\');
+cd('F:\Backup\Desktop\Faculdade\9º Período\Processamento Digital de Imagens\Github\PCA_PDI\V5 (PCA + SURF +WAVELET)');
 path = 'F:\Backup\Desktop\Faculdade\9º Período\Processamento Digital de Imagens\Github\PCA_PDI\Dataset\'; 
 
 %Leitura da base de dados
 imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames');
 
-n_executions = 1; %Número de execuções
+n_executions = 100; %Número de execuções
 n_class = 7; %Total de classes
 hits_accuracy = zeros(1, n_executions); %Vetor com as acurácias de acerto
 faults_accuracy = zeros(1, n_executions); %Vetor com as acurácias de erro
@@ -59,7 +59,7 @@ for k = 1:n_executions
     %Realização dos testes
     for i=1:n_test
         img_test = readimage(testCell, i);
-        img_test = imresize(img_test, [640 480]);
+        img_test = imresize(img_test, [320 240]);
   
         bag_feat= encode(bag, img_test, 'Normalization', 'L2');
         bag_feat = bag_feat';
@@ -134,8 +134,8 @@ if flagHit ~= 0
     img_train_hit = readimage(trainCell, hits_trainCell(n_executions, 1));
     img_test_hit = readimage(testCell, hits_testCell(n_executions, 1));
 
+    
     figure; imshowpair(img_train_hit, img_test_hit, 'montage');
-
     title("Exemplo de Acerto");
 end
 
@@ -145,6 +145,5 @@ if flagFault ~= 0
     img_test_fault = readimage(testCell, faults_testCell(n_executions, 1));
 
     figure; imshowpair(img_train_fault, img_test_fault, 'montage');
-
     title("Exemplo de Erro");
 end

@@ -10,10 +10,10 @@
 
 clear all, close all 
 
-% Paralel Pool
-%if isempty(gcp)
-%    parpool;
-%end
+%Paralel Pool
+if isempty(gcp)
+    parpool;
+end
 
 cd('F:\Backup\Desktop\Faculdade\9º Período\Processamento Digital de Imagens\Github\PCA_PDI\V4 (PCA + WAVELET)\');
 path = 'F:\Backup\Desktop\Faculdade\9º Período\Processamento Digital de Imagens\Github\PCA_PDI\Dataset'; 
@@ -24,7 +24,7 @@ imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames')
 % Wavelet
 sn = waveletScattering2 ('ImageSize' , [960 1280]);
 
-n_executions = 5; %Número de execuções
+n_executions = 10; %Número de execuções
 
 n_class = 7; %Total de classes
 hits_accuracy = zeros(1, n_executions); %Vetor com as acurácias de acerto
@@ -42,7 +42,7 @@ flagFault = 0; %Verifica se em uma das execuções teve pelo menos 1 erro
 
 for k = 1:n_executions
     %Seleção das imagens para treino e teste
-    [trainCell, testCell] = splitEachLabel(imds, 0.7, 'randomized');
+    [trainCell, testCell] = splitEachLabel(imds, 0.6, 'randomized');
 
     n_test = size(testCell.Files, 1); %Número de testes
     n_train = size(trainCell.Files, 1); %Número de treinos
@@ -68,6 +68,7 @@ for k = 1:n_executions
         %img_test = imresize(x, [320 240]);
         wav_feat = featureMatrix(sn, img_test,'Transform','log');
         wav_feat = mean(mean(wav_feat,2),3);
+        
         d = Classificar(PC, ProjetarAmostra(wav_feat, mn, P));
 
         %Cálculo e armazenamento dos acertos e erros
@@ -149,3 +150,5 @@ if flagFault ~= 0
 
     title("Exemplo de Erro");
 end
+
+save('workspace_wav_60-40.mat');
