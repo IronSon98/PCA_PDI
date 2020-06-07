@@ -1,5 +1,4 @@
->> main
-8           z(:, i) = [features];
+
 Execução número: 1
 Índice de acertos: 90%
 Índice de erros: 10%
@@ -143,4 +142,3 @@ Acurácia Classe Rochas = 81%
 Acurácia Classe Tapete = 100%
 Acurácia Classe Tijolos = 95%
 ***********************************************
->> 
