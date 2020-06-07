@@ -10,14 +10,14 @@
 
 clear all, close all 
 
-cd('C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Trabalho Final\PCA_PDI-master\');
-path = 'C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Trabalho Final\Dataset\'; 
+cd('C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Trabalho Final\PCA_PDI\V2 (PCA + SURF)\');
+path = 'C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Trabalho Final\PCA_PDI\Dataset\'; 
 
 %Leitura da base de dados
 imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames');
 bag = bagOfFeatures(imds, 'StrongestFeatures', 1.0, 'PointSelection', 'Detector', 'VocabularySize', 380);
 
-n_executions = 3; %Número de execuções
+n_executions = 50; %Número de execuções
 n_class = 7; %Total de classes
 accuracy_class_media(:, n_class) = 0; %Vetor com as médias de acurácia de acertos por classe
 hits_accuracy = zeros(1, n_executions); %Vetor com as acurácias de acerto
@@ -29,12 +29,13 @@ faults_trainCell(n_executions, :) = 0; %Matriz com todos os erros de treino
 s_hits_accuracy = 0; %Somatório das acurácias de acerto
 s_faults_accuracy = 0; %Somatório das acurácias de erro
 best_accuracy = 0; %Melhor acurácia de todas as execuções
+worst_accuracy = 100; %Pior acurácia de todas as execuções
 flagHit = 0; %Verifica se em uma das execuções teve pelo menos 1 acerto
 flagFault = 0; %Verifica se em uma das execuções teve pelo menos 1 erro
  
 for k = 1:n_executions
     %Seleção das imagens para treino e teste
-    [trainCell, testCell] = splitEachLabel(imds, 0.7, 'randomized');
+    [trainCell, testCell] = splitEachLabel(imds, 0.5, 'randomized');
 
     n_test = size(testCell.Files, 1); %Número de testes
     n_train = size(trainCell.Files, 1); %Número de treinos
@@ -57,7 +58,7 @@ for k = 1:n_executions
     %Realização dos testes
     for i=1:n_test
         img_test = readimage(testCell, i);
-        img_test = imresize(img_test, [256 256]);
+        %img_test = imresize(img_test, [256 192]);
         bag_features = encode(bag, img_test, 'Normalization', 'L2');
         d = Classificar(PC, ProjetarAmostra(bag_features, mn, P));
 
@@ -87,6 +88,15 @@ for k = 1:n_executions
     %Verificação da melhor acurácia
     if hits_accuracy(k) > best_accuracy
         best_accuracy = hits_accuracy(k);
+        best_trainCell = trainCell;
+        best_testCell = testCell;
+    end
+    
+    %Verificação da pior acurácia
+    if hits_accuracy(k) < worst_accuracy
+       worst_accuracy = hits_accuracy(k);
+       worst_trainCell = trainCell;
+       worst_testCell = testCell;
     end
     
     %Somatório de todas as acúracias de acertos e erros
@@ -117,6 +127,7 @@ disp("***********************************************");
 disp("Média de acertos: " + num2str(media_hits_accuracy) + "%");
 disp("Média de erros: " + num2str(media_faults_accuracy) + "%");
 disp("Melhor acurácia: " + num2str(best_accuracy) + "%");
+disp("Pior acurácia: " + num2str(worst_accuracy) + "%");
 for i=1:n_class
     accuracy_class_media(i) = accuracy_class_media(i)/n_executions;
     disp("Acurácia Classe " + char(trainCell.Labels(i*train)) + ' = ' + num2str(accuracy_class_media(i)) + "%");
@@ -142,3 +153,5 @@ if flagFault ~= 0
 
     title("Exemplo de Erro");
 end
+
+save('workspace_surf_50-50.mat');
