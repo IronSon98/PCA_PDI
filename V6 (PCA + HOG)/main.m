@@ -10,13 +10,13 @@
 
 clear all, close all 
 
-cd('C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Trabalho Final\PCA_PDI\V4 (PCA + HOG)\');
-path = 'C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\PCA\emocao2\'; 
+cd('C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Trabalho Final\PCA_PDI\V6 (PCA + HOG)\');
+path = 'C:\Users\Iron Santana Filho\Desktop\COLLEGE\Faculdade\Processamento Digital de Imagens\Trabalho Final\PCA_PDI\Dataset\'; 
 
 %Leitura da base de dados
 imds = imageDatastore(path,'IncludeSubfolders',true,'LabelSource','foldernames');
 
-n_executions = 1; %Número de execuções
+n_executions = 50; %Número de execuções
 n_class = 7; %Total de classes
 hits_accuracy = zeros(1, n_executions); %Vetor com as acurácias de acerto
 faults_accuracy = zeros(1, n_executions); %Vetor com as acurácias de erro
@@ -31,11 +31,11 @@ best_accuracy = 0; %Melhor acurácia de todas as execuções
 flagHit = 0; %Verifica se em uma das execuções teve pelo menos 1 acerto
 flagFault = 0; %Verifica se em uma das execuções teve pelo menos 1 erro
 
-CellSize = [2 2];
+CellSize = [44 44];
 
 for k = 1:n_executions
     %Seleção das imagens para treino e teste
-    [trainCell, testCell] = splitEachLabel(imds, 0.7);
+    [trainCell, testCell] = splitEachLabel(imds, 0.5, 'randomized');
 
     n_test = size(testCell.Files, 1); %Número de testes
     n_train = size(trainCell.Files, 1); %Número de treinos
@@ -58,6 +58,7 @@ for k = 1:n_executions
     %Realização dos testes
     for i=1:n_test
         img_test = readimage(testCell, i);
+        img_test = imresize(img_test, [256 256]);
         d = Classificar(PC, ProjetarAmostra(img_test,mn,P, CellSize));
 
         %Cálculo e armazenamento dos acertos e erros
@@ -139,3 +140,5 @@ if flagFault ~= 0
 
     title("Exemplo de Erro");
 end
+
+save('workspace_hog_50-50.mat');
