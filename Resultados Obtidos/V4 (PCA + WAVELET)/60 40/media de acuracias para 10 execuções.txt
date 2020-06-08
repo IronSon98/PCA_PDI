@@ -1,0 +1,143 @@
+Execução número: 1
+Índice de acertos: 91.9643%
+Índice de erros: 8.0357%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 103
+Acurácia Classe Capim = 81.25%
+Acurácia Classe Folhas = 93.75%
+Acurácia Classe Madeira = 100%
+Acurácia Classe Piso = 100%
+Acurácia Classe Rochas = 75%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 93.75%
+-----------------------------------------------
+Execução número: 2
+Índice de acertos: 92.8571%
+Índice de erros: 7.1429%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 104
+Acurácia Classe Capim = 81.25%
+Acurácia Classe Folhas = 100%
+Acurácia Classe Madeira = 100%
+Acurácia Classe Piso = 100%
+Acurácia Classe Rochas = 75%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 93.75%
+-----------------------------------------------
+Execução número: 3
+Índice de acertos: 91.9643%
+Índice de erros: 8.0357%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 103
+Acurácia Classe Capim = 68.75%
+Acurácia Classe Folhas = 100%
+Acurácia Classe Madeira = 100%
+Acurácia Classe Piso = 100%
+Acurácia Classe Rochas = 75%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 100%
+-----------------------------------------------
+Execução número: 4
+Índice de acertos: 94.6429%
+Índice de erros: 5.3571%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 106
+Acurácia Classe Capim = 87.5%
+Acurácia Classe Folhas = 100%
+Acurácia Classe Madeira = 100%
+Acurácia Classe Piso = 93.75%
+Acurácia Classe Rochas = 81.25%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 100%
+-----------------------------------------------
+Execução número: 5
+Índice de acertos: 87.5%
+Índice de erros: 12.5%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 98
+Acurácia Classe Capim = 75%
+Acurácia Classe Folhas = 68.75%
+Acurácia Classe Madeira = 100%
+Acurácia Classe Piso = 100%
+Acurácia Classe Rochas = 75%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 93.75%
+-----------------------------------------------
+Execução número: 6
+Índice de acertos: 94.6429%
+Índice de erros: 5.3571%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 106
+Acurácia Classe Capim = 87.5%
+Acurácia Classe Folhas = 100%
+Acurácia Classe Madeira = 100%
+Acurácia Classe Piso = 100%
+Acurácia Classe Rochas = 75%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 100%
+-----------------------------------------------
+Execução número: 7
+Índice de acertos: 92.8571%
+Índice de erros: 7.1429%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 104
+Acurácia Classe Capim = 75%
+Acurácia Classe Folhas = 100%
+Acurácia Classe Madeira = 100%
+Acurácia Classe Piso = 93.75%
+Acurácia Classe Rochas = 81.25%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 100%
+-----------------------------------------------
+Execução número: 8
+Índice de acertos: 90.1786%
+Índice de erros: 9.8214%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 101
+Acurácia Classe Capim = 81.25%
+Acurácia Classe Folhas = 68.75%
+Acurácia Classe Madeira = 100%
+Acurácia Classe Piso = 100%
+Acurácia Classe Rochas = 81.25%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 100%
+-----------------------------------------------
+Execução número: 9
+Índice de acertos: 91.9643%
+Índice de erros: 8.0357%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 103
+Acurácia Classe Capim = 87.5%
+Acurácia Classe Folhas = 93.75%
+Acurácia Classe Madeira = 93.75%
+Acurácia Classe Piso = 87.5%
+Acurácia Classe Rochas = 93.75%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 87.5%
+-----------------------------------------------
+Execução número: 10
+Índice de acertos: 95.5357%
+Índice de erros: 4.4643%
+Quantidade de imagens de teste: 112
+Quantidade de acertos: 107
+Acurácia Classe Capim = 81.25%
+Acurácia Classe Folhas = 100%
+Acurácia Classe Madeira = 100%
+Acurácia Classe Piso = 100%
+Acurácia Classe Rochas = 87.5%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 100%
+-----------------------------------------------
+ 
+***********************************************
+Média de acertos: 92.4107%
+Média de erros: 7.5893%
+Melhor acurácia: 95.5357%
+Acurácia Classe Capim = 80.625%
+Acurácia Classe Folhas = 92.5%
+Acurácia Classe Madeira = 99.375%
+Acurácia Classe Piso = 97.5%
+Acurácia Classe Rochas = 80%
+Acurácia Classe Tapete = 100%
+Acurácia Classe Tijolos = 96.875%
+***********************************************
